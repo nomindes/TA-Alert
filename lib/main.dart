@@ -21,7 +21,7 @@ class TAdaikoukun extends StatelessWidget {
         useMaterial3: true,
         colorScheme: MaterialTheme.lightScheme().toColorScheme(),
       ),
-      home: Home(),
+      home: MyApp(),
     );
   }
 }
