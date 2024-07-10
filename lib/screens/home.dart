@@ -3,6 +3,8 @@ import 'package:tadaikoukun/screens/settings.dart';
 import 'package:tadaikoukun/theme.dart';
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -14,17 +16,17 @@ class MyApp extends StatelessWidget {
       ),
       home: Scaffold(
         appBar: AppBar(
-          title: Align(
+          title: const Align(
             alignment: Alignment.centerLeft,
             child: Text('TA代行くん', style: TextStyle(fontSize: 16)),
           ),
-          leading: Icon(Icons.note),
+          leading: const Icon(Icons.note),
           actions: [
             IconButton(
-              icon: Icon(Icons.settings),
+              icon: const Icon(Icons.settings),
               onPressed: () {
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => SettingsScreen()));
+                    MaterialPageRoute(builder: (context) => const SettingsScreen()));
               },
             ),
           ],
@@ -32,7 +34,7 @@ class MyApp extends StatelessWidget {
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
+            const Padding(
               padding: EdgeInsets.fromLTRB(50, 100, 0, 0),
               child: Row(
                 children: [
@@ -45,9 +47,9 @@ class MyApp extends StatelessWidget {
                 ],
               ),
             ),
-            Spacer(),
+            const Spacer(),
             Padding(
-              padding: EdgeInsets.fromLTRB(50, 0, 50, 100),
+              padding: const EdgeInsets.fromLTRB(50, 0, 50, 100),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -59,8 +61,8 @@ class MyApp extends StatelessWidget {
                         MaterialTheme.lightScheme().primary),
                     minHeight: 8,
                   ),
-                  SizedBox(height: 8),
-                  Align(
+                  const SizedBox(height: 8),
+                  const Align(
                     alignment: Alignment.centerRight,
                     child: Text(
                       '○○%',
