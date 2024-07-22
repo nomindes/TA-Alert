@@ -1,8 +1,73 @@
 import 'package:flutter/material.dart';
+import 'package:tadaikoukun/utils/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
+
+  @override
+  // ignore: library_private_types_in_public_api
+  _SettingsScreenState createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  bool _microphonePermissionGranted = false;
+  final MicrophonePermissionsHandler _permissionsHandler =
+      MicrophonePermissionsHandler();
+
+  @override
+  void initState() {
+    super.initState();
+    _checkMicrophonePermission();
+  }
+
+  Future<void> _checkMicrophonePermission() async {
+    final isGranted = await _permissionsHandler.isGranted;
+    setState(() {
+      _microphonePermissionGranted = isGranted;
+    });
+  }
+
+  Future<void> _handleMicrophonePermission(bool value) async {
+    if (value) {
+      final status = await _permissionsHandler.request();
+      setState(() {
+        _microphonePermissionGranted =
+            status == MicrophonePermissionStatus.granted;
+      });
+
+      switch (status) {
+        case MicrophonePermissionStatus.granted:
+          // ignore: use_build_context_synchronously
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('マイクの使用が許可されました')),
+          );
+          break;
+        case MicrophonePermissionStatus.denied:
+          // ignore: use_build_context_synchronously
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('マイクの使用が拒否されました')),
+          );
+          break;
+        case MicrophonePermissionStatus.prompt:
+          // ignore: use_build_context_synchronously
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('次回、マイクの使用時に再度許可を求められます')),
+          );
+          break;
+        case MicrophonePermissionStatus.notSupported:
+          // ignore: use_build_context_synchronously
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('このブラウザではマイクの使用がサポートされていません')),
+          );
+          break;
+      }
+    } else {
+      setState(() {
+        _microphonePermissionGranted = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,15 +105,15 @@ class SettingsScreen extends StatelessWidget {
             const Text('権限',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             SwitchListTile(
-              title: const Text('音声'),
-              value: true,
-              onChanged: (bool value) {},
+              title: const Text('マイク'),
+              value: _microphonePermissionGranted,
+              onChanged: _handleMicrophonePermission,
             ),
             const SizedBox(height: 20),
             const Text('クレジット',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 10),
-            _buildCreditItem('Sena(Coding)', 'https://nomindev.net/'),
+            _buildCreditItem('Sena(Coding)', 'https://nomin.jp'),
             _buildCreditItem('Daigo(AL授業免除乱用)', 'https://youtube.com/@tdm22/'),
             _buildCreditItem('Tomo(Design)', 'https://linktr.ee/utawaka0001'),
             _buildCreditItem('Eito(Design)', 'https://instagram.com/s4_waei/'),

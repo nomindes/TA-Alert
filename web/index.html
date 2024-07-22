@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!--
+    If you are serving your web app in a path other than the root, change the
+    href value below to reflect the base path you are serving from.
+
+    The path provided below has to start and end with a slash "/" in order for
+    it to work correctly.
+
+    For more details:
+    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+
+    This is a placeholder for base href that will be replaced by the value of
+    the `--base-href` argument provided to `flutter build`.
+  -->
+  <base href="$FLUTTER_BASE_HREF">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="A new Flutter project.">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="ta_alert">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png"/>
+
+  <title>ta_alert</title>
+  <link rel="manifest" href="manifest.json">
+</head>
+<body>
+  <script src="flutter_bootstrap.js" async></script>
+  <script>
+    let audioContext;
+    let analyser;
+    let microphone;
+    let javascriptNode;
+    
+    function startAudioProcessing() {
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      analyser = audioContext.createAnalyser();
+      javascriptNode = audioContext.createScriptProcessor(2048, 1, 1);
+    
+      navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+        .then(function(stream) {
+          microphone = audioContext.createMediaStreamSource(stream);
+          microphone.connect(analyser);
+          analyser.connect(javascriptNode);
+          javascriptNode.connect(audioContext.destination);
+    
+          javascriptNode.onaudioprocess = function() {
+            var array = new Uint8Array(analyser.frequencyBinCount);
+            analyser.getByteFrequencyData(array);
+            var values = 0;
+    
+            var length = array.length;
+            for (var i = 0; i < length; i++) {
+              values += array[i];
+            }
+    
+            var average = values / length;
+            var volume = Math.round(average);
+            
+            // Convert to decibels (rough approximation)
+            var decibels = 20 * Math.log10(volume / 255) + 100;
+            
+            // Call Dart function to update UI
+            if (window.updateVolume) {
+              window.updateVolume(decibels);
+            }
+          }
+        })
+        .catch(function(err) {
+          console.error('Error accessing microphone:', err);
+        });
+    }
+    
+    function stopAudioProcessing() {
+      if (javascriptNode) javascriptNode.disconnect();
+      if (analyser) analyser.disconnect();
+      if (microphone) microphone.disconnect();
+      if (audioContext) audioContext.close();
+    }
+    </script>
+</body>
+</html>

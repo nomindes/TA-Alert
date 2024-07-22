@@ -1,19 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:tadaikoukun/screens/home.dart';
 import 'package:tadaikoukun/theme.dart';
+import 'package:tadaikoukun/utils/permission_handler.dart';
 
 void main() {
   runApp(const TAdaikoukun());
 }
 
-class TAdaikoukun extends StatelessWidget {
+class TAdaikoukun extends StatefulWidget {
   const TAdaikoukun({super.key});
 
-  // This widget is the root of your application.
+  @override
+  // ignore: library_private_types_in_public_api
+  _TAdaikoukunState createState() => _TAdaikoukunState();
+}
+
+class _TAdaikoukunState extends State<TAdaikoukun> {
+  final MicrophonePermissionsHandler _permissionsHandler = MicrophonePermissionsHandler();
+
+  @override
+  void initState() {
+    super.initState();
+    _checkMicrophonePermission();
+  }
+
+  Future<void> _checkMicrophonePermission() async {
+    final isGranted = await _permissionsHandler.isGranted;
+    if (!isGranted) {
+      // 権限がない場合は、MyAppウィジェットで処理します
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "TA代行くん",
+      title: "TA Alert",
       theme: ThemeData(
           useMaterial3: true,
           colorScheme: MaterialTheme.lightScheme().toColorScheme()),
