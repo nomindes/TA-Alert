@@ -3,6 +3,7 @@ import 'package:tadaikoukun/screens/settings.dart';
 import 'package:tadaikoukun/theme.dart';
 import 'package:tadaikoukun/utils/audio_handler.dart';
 import 'package:tadaikoukun/utils/permission_handler.dart';
+import 'package:tadaikoukun/utils/slack_notifier.dart';
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -16,11 +17,16 @@ class _MyAppState extends State<MyApp> {
   bool _isListening = false;
   bool _microphonePermissionGranted = false;
   final MicrophonePermissionsHandler _permissionsHandler = MicrophonePermissionsHandler();
+  late SlackNotifier _slackNotifier;
 
   @override
   void initState() {
     super.initState();
     _checkMicrophonePermission();
+    _slackNotifier = SlackNotifier(
+      webhookUrl: 'https://hooks.slack.com/services/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',
+      threshold: 70.0, // 閾値を70 dBに設定
+    );
   }
 
   Future<void> _checkMicrophonePermission() async {
@@ -70,6 +76,7 @@ class _MyAppState extends State<MyApp> {
         setState(() {
           _volume = volume;
         });
+        _slackNotifier.checkAndNotify(volume);
       });
       setState(() {
         _isListening = true;
