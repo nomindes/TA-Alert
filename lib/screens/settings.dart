@@ -3,60 +3,53 @@ import 'package:tadaikoukun/utils/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SettingsScreen extends StatefulWidget {
-  const SettingsScreen({Key? key}) : super(key: key);
+  final Function(bool) onMicrophonePermissionChanged;
+  final bool initialMicrophonePermission;
+
+  const SettingsScreen({
+    Key? key, 
+    required this.onMicrophonePermissionChanged,
+    required this.initialMicrophonePermission,
+  }) : super(key: key);
 
   @override
-  // ignore: library_private_types_in_public_api
   _SettingsScreenState createState() => _SettingsScreenState();
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  bool _microphonePermissionGranted = false;
-  final MicrophonePermissionsHandler _permissionsHandler =
-      MicrophonePermissionsHandler();
+  late bool _microphonePermissionGranted;
+  final MicrophonePermissionsHandler _permissionsHandler = MicrophonePermissionsHandler();
 
   @override
   void initState() {
     super.initState();
-    _checkMicrophonePermission();
-  }
-
-  Future<void> _checkMicrophonePermission() async {
-    final isGranted = await _permissionsHandler.isGranted;
-    setState(() {
-      _microphonePermissionGranted = isGranted;
-    });
+    _microphonePermissionGranted = widget.initialMicrophonePermission;
   }
 
   Future<void> _handleMicrophonePermission(bool value) async {
     if (value) {
       final status = await _permissionsHandler.request();
       setState(() {
-        _microphonePermissionGranted =
-            status == MicrophonePermissionStatus.granted;
+        _microphonePermissionGranted = status == MicrophonePermissionStatus.granted;
       });
 
       switch (status) {
         case MicrophonePermissionStatus.granted:
-          // ignore: use_build_context_synchronously
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('マイクの使用が許可されました')),
           );
           break;
         case MicrophonePermissionStatus.denied:
-          // ignore: use_build_context_synchronously
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('マイクの使用が拒否されました')),
           );
           break;
         case MicrophonePermissionStatus.prompt:
-          // ignore: use_build_context_synchronously
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('次回、マイクの使用時に再度許可を求められます')),
           );
           break;
         case MicrophonePermissionStatus.notSupported:
-          // ignore: use_build_context_synchronously
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('このブラウザではマイクの使用がサポートされていません')),
           );
@@ -67,6 +60,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         _microphonePermissionGranted = false;
       });
     }
+    widget.onMicrophonePermissionChanged(_microphonePermissionGranted);
   }
 
   @override

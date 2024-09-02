@@ -8,13 +8,13 @@ class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _MyAppState createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
   double _volume = 0.0;
   bool _isListening = false;
+  bool _microphonePermissionGranted = false;
   final MicrophonePermissionsHandler _permissionsHandler = MicrophonePermissionsHandler();
 
   @override
@@ -25,6 +25,9 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> _checkMicrophonePermission() async {
     final isGranted = await _permissionsHandler.isGranted;
+    setState(() {
+      _microphonePermissionGranted = isGranted;
+    });
     if (!isGranted) {
       _showPermissionDialog();
     } else {
@@ -47,7 +50,10 @@ class _MyAppState extends State<MyApp> {
                 Navigator.of(context).pop();
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const SettingsScreen()),
+                  MaterialPageRoute(builder: (context) => SettingsScreen(
+                    onMicrophonePermissionChanged: _handleMicrophonePermissionChanged,
+                    initialMicrophonePermission: _microphonePermissionGranted,
+                  )),
                 ).then((_) => _checkMicrophonePermission());
               },
             ),
@@ -58,7 +64,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   void _startListening() {
-    if (!_isListening) {
+    if (_microphonePermissionGranted && !_isListening) {
       AudioHandler.startListening();
       AudioHandler.volumeStream.listen((volume) {
         setState(() {
@@ -68,6 +74,27 @@ class _MyAppState extends State<MyApp> {
       setState(() {
         _isListening = true;
       });
+    }
+  }
+
+  void _stopListening() {
+    if (_isListening) {
+      AudioHandler.stopListening();
+      setState(() {
+        _isListening = false;
+        _volume = 0.0;
+      });
+    }
+  }
+
+  void _handleMicrophonePermissionChanged(bool isGranted) {
+    setState(() {
+      _microphonePermissionGranted = isGranted;
+    });
+    if (isGranted) {
+      _startListening();
+    } else {
+      _stopListening();
     }
   }
 
@@ -97,8 +124,13 @@ class _MyAppState extends State<MyApp> {
             IconButton(
               icon: const Icon(Icons.settings),
               onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => const SettingsScreen()));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SettingsScreen(
+                    onMicrophonePermissionChanged: _handleMicrophonePermissionChanged,
+                    initialMicrophonePermission: _microphonePermissionGranted,
+                  )),
+                );
               },
             ),
           ],
@@ -125,7 +157,7 @@ class _MyAppState extends State<MyApp> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   LinearProgressIndicator(
-                    value: _volume / 100, // 音量を0-100の範囲で正規化
+                    value: _isListening ? _volume / 100 : 0,
                     backgroundColor: MaterialTheme.lightScheme().primaryContainer,
                     valueColor: AlwaysStoppedAnimation<Color>(
                         MaterialTheme.lightScheme().primary),
@@ -135,7 +167,7 @@ class _MyAppState extends State<MyApp> {
                   Align(
                     alignment: Alignment.centerRight,
                     child: Text(
-                      '${_volume.toStringAsFixed(1)} dB',
+                      _isListening ? '${_volume.toStringAsFixed(1)} dB' : '0.0 dB',
                       style: const TextStyle(fontSize: 16),
                     ),
                   ),
