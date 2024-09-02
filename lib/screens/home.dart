@@ -24,8 +24,8 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     _checkMicrophonePermission();
     _slackNotifier = SlackNotifier(
-      webhookUrl: 'https://hooks.slack.com/services/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',
-      threshold: 70.0, // 閾値を70 dBに設定
+      webhookUrl: 'https://hooks.slack.com/services/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',
+      threshold: 50.0,
     );
   }
 
