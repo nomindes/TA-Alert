@@ -10,6 +10,7 @@ class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _MyAppState createState() => _MyAppState();
 }
 
@@ -27,7 +28,7 @@ class _MyAppState extends State<MyApp> {
     _checkMicrophonePermission();
     _slackNotifier = SlackNotifier(
       webhookUrl: dotenv.get('WEBHOOK'),
-      threshold: 50.0,
+      threshold: 90.0,
     );
   }
 
@@ -129,7 +130,7 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(
           title: const Align(
             alignment: Alignment.centerLeft,
-            child: Text('TA代行くん', style: TextStyle(fontSize: 16)),
+            child: Text('TA Alert', style: TextStyle(fontSize: 16)),
           ),
           leading: const Icon(Icons.note),
           actions: [
@@ -154,12 +155,12 @@ class _MyAppState extends State<MyApp> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Padding(
-              padding: EdgeInsets.fromLTRB(50, 100, 0, 0),
+              padding: EdgeInsets.fromLTRB(100, 200, 0, 0),
               child: Row(
                 children: [
                   SizedBox(width: 8),
                   Text(
-                    '○教室',
+                    'Classroom',
                     style:
                         TextStyle(fontSize: 40, fontWeight: FontWeight.normal),
                   ),
@@ -168,7 +169,7 @@ class _MyAppState extends State<MyApp> {
             ),
             const Spacer(),
             Padding(
-              padding: const EdgeInsets.fromLTRB(50, 0, 50, 100),
+              padding: const EdgeInsets.fromLTRB(100, 0, 100, 200),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [

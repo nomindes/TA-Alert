@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:tadaikoukun/utils/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -13,6 +15,7 @@ class SettingsScreen extends StatefulWidget {
   }) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _SettingsScreenState createState() => _SettingsScreenState();
 }
 
@@ -35,6 +38,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
       switch (status) {
         case MicrophonePermissionStatus.granted:
+          // ignore: duplicate_ignore
+          // ignore: use_build_context_synchronously
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('マイクの使用が許可されました')),
           );

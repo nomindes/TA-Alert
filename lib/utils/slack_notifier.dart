@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 class SlackNotifier {
@@ -42,10 +43,10 @@ class SlackNotifier {
   Future<void> _sendSlackNotification(double volume) async {
     final message = {
       'text': '警告: 音量が閾値 ${threshold.toStringAsFixed(1)} dBを超えています！\n'
-              '現在の音量: ${volume.toStringAsFixed(1)} dB'
+          '現在の音量: ${volume.toStringAsFixed(1)} dB'
     };
 
-    final proxyUrl = 'https://thingproxy.freeboard.io/fetch/';
+    const proxyUrl = 'https://thingproxy.freeboard.io/fetch/';
     final fullUrl = proxyUrl + webhookUrl;
 
     try {
@@ -58,13 +59,21 @@ class SlackNotifier {
       );
 
       if (response.statusCode != 200) {
-        print('Slack通知の送信に失敗しました: ${response.statusCode}');
-        print('レスポンス: ${response.body}');
+        if (kDebugMode) {
+          print('Slack通知の送信に失敗しました: ${response.statusCode}');
+        }
+        if (kDebugMode) {
+          print('レスポンス: ${response.body}');
+        }
       } else {
-        print('Slack通知を送信しました: ${message['text']}');
+        if (kDebugMode) {
+          print('Slack通知を送信しました: ${message['text']}');
+        }
       }
     } catch (e) {
-      print('Slack通知の送信中にエラーが発生しました: $e');
+      if (kDebugMode) {
+        print('Slack通知の送信中にエラーが発生しました: $e');
+      }
     }
   }
 }
