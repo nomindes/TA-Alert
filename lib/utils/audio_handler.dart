@@ -7,11 +7,9 @@ class AudioHandler {
 
   static Future<void> startListening() async {
     _volumeController = StreamController<double>.broadcast();
-    
-    // JavaScriptを呼び出してマイクからの音声処理を開始
+
     js.context.callMethod('startAudioProcessing');
 
-    // JavaScriptからのコールバックを設定
     js.context['updateVolume'] = (double volume) {
       _volumeController?.add(volume);
     };

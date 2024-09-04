@@ -6,18 +6,18 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 Future<void> main() async {
   await dotenv.load(fileName: '.env');
-  runApp(const TAdaikoukun());
+  runApp(const TAAlert());
 }
 
-class TAdaikoukun extends StatefulWidget {
-  const TAdaikoukun({super.key});
+class TAAlert extends StatefulWidget {
+  const TAAlert({super.key});
 
   @override
   // ignore: library_private_types_in_public_api
-  _TAdaikoukunState createState() => _TAdaikoukunState();
+  _TAAlertState createState() => _TAAlertState();
 }
 
-class _TAdaikoukunState extends State<TAdaikoukun> {
+class _TAAlertState extends State<TAAlert> {
   final MicrophonePermissionsHandler _permissionsHandler =
       MicrophonePermissionsHandler();
 
@@ -29,9 +29,7 @@ class _TAdaikoukunState extends State<TAdaikoukun> {
 
   Future<void> _checkMicrophonePermission() async {
     final isGranted = await _permissionsHandler.isGranted;
-    if (!isGranted) {
-      // 権限がない場合は、MyAppウィジェットで処理します
-    }
+    if (!isGranted) {}
   }
 
   @override
