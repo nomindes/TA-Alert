@@ -4,6 +4,7 @@ import 'package:tadaikoukun/theme.dart';
 import 'package:tadaikoukun/utils/audio_handler.dart';
 import 'package:tadaikoukun/utils/permission_handler.dart';
 import 'package:tadaikoukun/utils/slack_notifier.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -16,7 +17,8 @@ class _MyAppState extends State<MyApp> {
   double _volume = 0.0;
   bool _isListening = false;
   bool _microphonePermissionGranted = false;
-  final MicrophonePermissionsHandler _permissionsHandler = MicrophonePermissionsHandler();
+  final MicrophonePermissionsHandler _permissionsHandler =
+      MicrophonePermissionsHandler();
   late SlackNotifier _slackNotifier;
 
   @override
@@ -24,7 +26,7 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     _checkMicrophonePermission();
     _slackNotifier = SlackNotifier(
-      webhookUrl: 'https://hooks.slack.com/services/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',
+      webhookUrl: dotenv.get('WEBHOOK'),
       threshold: 50.0,
     );
   }
@@ -56,10 +58,13 @@ class _MyAppState extends State<MyApp> {
                 Navigator.of(context).pop();
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => SettingsScreen(
-                    onMicrophonePermissionChanged: _handleMicrophonePermissionChanged,
-                    initialMicrophonePermission: _microphonePermissionGranted,
-                  )),
+                  MaterialPageRoute(
+                      builder: (context) => SettingsScreen(
+                            onMicrophonePermissionChanged:
+                                _handleMicrophonePermissionChanged,
+                            initialMicrophonePermission:
+                                _microphonePermissionGranted,
+                          )),
                 ).then((_) => _checkMicrophonePermission());
               },
             ),
@@ -133,10 +138,13 @@ class _MyAppState extends State<MyApp> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => SettingsScreen(
-                    onMicrophonePermissionChanged: _handleMicrophonePermissionChanged,
-                    initialMicrophonePermission: _microphonePermissionGranted,
-                  )),
+                  MaterialPageRoute(
+                      builder: (context) => SettingsScreen(
+                            onMicrophonePermissionChanged:
+                                _handleMicrophonePermissionChanged,
+                            initialMicrophonePermission:
+                                _microphonePermissionGranted,
+                          )),
                 );
               },
             ),
@@ -152,7 +160,8 @@ class _MyAppState extends State<MyApp> {
                   SizedBox(width: 8),
                   Text(
                     '○教室',
-                    style: TextStyle(fontSize: 40, fontWeight: FontWeight.normal),
+                    style:
+                        TextStyle(fontSize: 40, fontWeight: FontWeight.normal),
                   ),
                 ],
               ),
@@ -165,7 +174,8 @@ class _MyAppState extends State<MyApp> {
                 children: [
                   LinearProgressIndicator(
                     value: _isListening ? _volume / 100 : 0,
-                    backgroundColor: MaterialTheme.lightScheme().primaryContainer,
+                    backgroundColor:
+                        MaterialTheme.lightScheme().primaryContainer,
                     valueColor: AlwaysStoppedAnimation<Color>(
                         MaterialTheme.lightScheme().primary),
                     minHeight: 8,
@@ -174,7 +184,9 @@ class _MyAppState extends State<MyApp> {
                   Align(
                     alignment: Alignment.centerRight,
                     child: Text(
-                      _isListening ? '${_volume.toStringAsFixed(1)} dB' : '0.0 dB',
+                      _isListening
+                          ? '${_volume.toStringAsFixed(1)} dB'
+                          : '0.0 dB',
                       style: const TextStyle(fontSize: 16),
                     ),
                   ),

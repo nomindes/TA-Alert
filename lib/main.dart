@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:tadaikoukun/screens/home.dart';
 import 'package:tadaikoukun/theme.dart';
 import 'package:tadaikoukun/utils/permission_handler.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
+Future<void> main() async {
+  await dotenv.load(fileName: '.env');
   runApp(const TAdaikoukun());
 }
 
@@ -16,7 +18,8 @@ class TAdaikoukun extends StatefulWidget {
 }
 
 class _TAdaikoukunState extends State<TAdaikoukun> {
-  final MicrophonePermissionsHandler _permissionsHandler = MicrophonePermissionsHandler();
+  final MicrophonePermissionsHandler _permissionsHandler =
+      MicrophonePermissionsHandler();
 
   @override
   void initState() {
